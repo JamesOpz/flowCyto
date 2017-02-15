@@ -1,36 +1,57 @@
-# JO Initial rough script 30/01/17
+# JO working script with updates from Shahram
+# 15/02/2017
+
+# To Do list:
+# Can I split the populations by keyword 
+# Then add an pseudovalue column so that we can map the cellular idenitites back on the nodes
+
+
+
 # load the SPADE library
 library(spade)
+
+# Load the heatmap functionality libraries
+# Note heat map will transition to Superheat  
 library(gplots)
 library(pheatmap)
+library(superheat)
 library(RColorBrewer)
 
-# To Do:
-# In theory we want to split the populations by keyword and add an pseudovalue column so that we can map the cellular idenitites back on the nodes
 
 # Use a file exported from FlowJo, must contain the t-SNE values within it
-# Should export compensated paramters
+# Should export uncompensated parameters
+
+# User interface input file path?
+print('Input FCS file to analyse as data_file_path = . . ')
+
 data_file_path = '942_UNCOMP_TAM Ter119 perpc55 Cd45 FITC F480 BV410 MHC II PE CD11c 780 CD11b 510_942 cd206 A_CD45+.fcs'
 
 # QC
 fsc_file <- flowCore::read.FCS(data_file_path)
 fsc_file
 
-# Identify number if cell clusters, not 100% sure how many is optimal, but it appears that overclustring is important
+# User interface to check
+
+# Identify number if cell clusters, not 100% sure how many is optimal, 
+# it appears that overclustring is important
 # Clustering should be proportional to the cell number as you dont want loads of nodes with no cells in it 
 Clusters <- 100
 
-# Name of output directory  
-output_dir <- file.path("942_TAM_ALLPARAMS")
+# Name of output directory
+out <- strsplit(data_file_path,' ')
+out_path <- out[[1]][1]
+output_dir <- file.path(out_path)
 
-# Select the markers to run the clustering on, this is going to be the tSNE channels
-markers <- c('APC-A', 'PE-A', 'Pacific Blue-A', 'AmCyan-A', 'APC-Cy7-A')
+# Select SPADE to run on the tSNE channels the
+markers <- c('tSNE_X_P_30_E_200_I_1000_T_0.2', 'tSNE_Y_P_30_E_200_I_1000_T_0.2')
 
-# not sure how to tramsform the other data, i don't think it really matters
-transforms <- c('APC-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'AmCyan-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'PE-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'Pacific Blue-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'APC-Cy7-A'=flowCore::arcsinhTransform(a=0, b=0.01))
+# This is for specific marker transforms
+# transforms <- c('APC-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'AmCyan-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'PE-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'Pacific Blue-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'APC-Cy7-A'=flowCore::arcsinhTransform(a=0, b=0.01))
 
-#Execute core SPADE algorithm
-SPADE.driver(data_file_path, out_dir=output_dir, transforms=transforms, cluster_cols=markers,k= Clusters)
+#Execute core SPADE algorithm in replicates of 3
+# To generate 3 cluster tables to average and then heatmap
+
+SPADE.driver(data_file_path, out_dir=output_dir, transforms=flowCore::arcsinhTransform(a=0, b=0.01), cluster_cols=markers,k= Clusters)
 
 # Look at the files generated
 grep("^libloc",dir(output_dir),invert=TRUE,value=TRUE)
