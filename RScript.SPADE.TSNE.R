@@ -22,48 +22,61 @@ library(RColorBrewer)
 # Should export uncompensated parameters
 
 # User interface input file path?
-print('Input FCS file to analyse as data_file_path = . . ')
 
-data_file_path = '942_UNCOMP_TAM Ter119 perpc55 Cd45 FITC F480 BV410 MHC II PE CD11c 780 CD11b 510_942 cd206 A_CD45+.fcs'
 
-# QC
-fsc_file <- flowCore::read.FCS(data_file_path)
-fsc_file
+data_file_path = '1000_TAM Ter119 perpc55 Cd45 780 F480 BV410 MHC II PE Ly6C 488 CD11b 510_1007 CD206A_Single Cells.fcs'
 
-# User interface to check
+QC_fcs_file <- function(data_file_path) {
+  # QC with user interface to check
+  fsc_file <- flowCore::read.FCS(data_file_path)
+  fsc_file
+
+}
 
 # Identify number if cell clusters, not 100% sure how many is optimal, 
 # it appears that overclustring is important
 # Clustering should be proportional to the cell number as you dont want loads of nodes with no cells in it 
-Clusters <- 100
 
-# Name of output directory
-out <- strsplit(data_file_path,' ')
-out_path <- out[[1]][1]
-output_dir <- file.path(out_path)
+RUN_SPADE_tSNE <- function(data_file_path, clusters=100, n=3, transforms='flowCore::arcsinhTransform(a=0, b=0.01))') {
+  Clusters <- 100
 
-# Select SPADE to run on the tSNE channels the
-markers <- c('tSNE_X_P_30_E_200_I_1000_T_0.2', 'tSNE_Y_P_30_E_200_I_1000_T_0.2')
+  # Name of output directory
+  out <- strsplit(data_file_path,' ')
+  out_path <- out[[1]][1]
+  output_dir <- file.path(out_path)
 
-# This is for specific marker transforms
-# transforms <- c('APC-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'AmCyan-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'PE-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'Pacific Blue-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'APC-Cy7-A'=flowCore::arcsinhTransform(a=0, b=0.01))
+  # Creat master directory to put repeats in
+  
+  # Select SPADE to run on the tSNE channels the
+  # Note that the tSNE settings are embedded into channel name and must be the same  
+  markers <- c('tSNE_X_P_30_E_200_I_1000_T_0.2', 'tSNE_Y_P_30_E_200_I_1000_T_0.2')
 
-#Execute core SPADE algorithm in replicates of 3
-# To generate 3 cluster tables to average and then heatmap
+  # This is for specific marker transforms
+  # transforms <- c('APC-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'AmCyan-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'PE-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'Pacific Blue-A'=flowCore::arcsinhTransform(a=0, b=0.01), 'APC-Cy7-A'=flowCore::arcsinhTransform(a=0, b=0.01))
 
-SPADE.driver(data_file_path, out_dir=output_dir, transforms=flowCore::arcsinhTransform(a=0, b=0.01), cluster_cols=markers,k= Clusters)
+  # Execute core SPADE algorithm in replicates of 3
+  # To generate 3 cluster tables to average and then heatmap
+  
+  for(i in 1:n){
+    
+    output_dir_n <- paste(output_dir, i, sep = '_') 
+    
+    # execute core SPADE command
+    SPADE.driver(data_file_path, out_dir=output_dir_n, transforms=transforms, cluster_cols=markers,k= Clusters)
 
-# Look at the files generated
-grep("^libloc",dir(output_dir),invert=TRUE,value=TRUE)
+    # load the graph object into memory
+    mst_graph <- igraph:::read.graph(paste(output_dir_n,"mst.gml",sep=.Platform$file.sep),format="gml")
 
-# loade the graph object into memory
-mst_graph <- igraph:::read.graph(paste(output_dir,"mst.gml",sep=.Platform$file.sep),format="gml")
+    # Load the node marker intesity values for heatmapping 
+    layout <- read.table(paste(output_dir_n,"layout.table",sep=.Platform$file.sep))
 
-# Load the node marker intesity values for heatmapping 
-layout <- read.table(paste(output_dir,"layout.table",sep=.Platform$file.sep))
+    # Plot all the trees!! (In kamada kawai force driected graph mapping) 
+    SPADE.plot.trees(mst_graph, output_dir_n, out_dir=paste(output_dir_n,"pdf",sep=.Platform$file.sep), layout=as.matrix(layout))
 
-# Plot all the trees!! (In kamada kawai force driected graph mapping) 
-SPADE.plot.trees(mst_graph, output_dir, out_dir=paste(output_dir,"pdf",sep=.Platform$file.sep), layout=as.matrix(layout))
+  }
+}
+
+Combine_heatmap_SPADE <- function() {}
 
 # Heatmap the sample table
 
