@@ -3,13 +3,53 @@
 # V2 - integrated functional script
 
 # To Do list:
+<<<<<<< HEAD
 # Make the heatmap all fancy 
 # Make the colour palette really nice
+=======
+# Calculate CVs across nodes 
+# Make the heatmap all fancy 
+# Make the colour palette really nice
+# Repaet channel poltting
+>>>>>>> origin/master
 # Re-base 
 # Driver funtion
 
 # Need to trace modify the write.FCS fucntion to alter the $PnR - done
+<<<<<<< HEAD
 # line 35 -> change 1025
+=======
+
+viSNE.analysis.driver <- function(FCS_file_path, csv_file_path = NULL, covertFCS = FALSE, markers, fpanel){
+  
+  # Plot tSNE values for all channels - incomplete
+  plot
+
+  # Generate new FCS file if specified
+  if(convertFCS = TRUE){
+    
+    read_csvToFcs(csv_file_path)
+   
+  }
+  
+  
+  # QC the fcs file to log - incomplete
+  
+  # Determine number of clusters - incomplete
+  
+  
+  # Run SPADE clusteirng 
+  RUN_SPADE_tSNE(fcs_file)
+  
+  # Plot a pretty cluster_map
+  plot_pretty_clusters(fcs_file)
+  
+  # Heatmap
+  
+  
+  
+}
+>>>>>>> origin/master
 
 # must find cluster file name
 plot_pretty_clusters <- function(fcs_file_cluster){
@@ -29,14 +69,19 @@ plot_pretty_clusters <- function(fcs_file_cluster){
   # extrat the data from within
   tSNE_clust <- exprs(cluster_fcs)
   
+<<<<<<< HEAD
   clust_df <- as.data.frame(tSNE_clust)
   
+=======
+  clust_df <- data.frame(tSNE_clust)
+>>>>>>> origin/master
   
   # define color schema
   # must be same colour length as the number clusters used for SPADE
   # Not this is in a 12 colour rainbow, must figure out how to get mroe colours
   clust_df$Col <- palette(rainbow(200))[as.numeric(cut(clust_df$cluster, breaks = 200))]
   
+<<<<<<< HEAD
   time <- Sys.time()
   time <- format(time, format =  '%H%M')
   pdf_outfile <- paste(output_dir,'all_cluster', time, '.pdf', sep = '_')
@@ -46,16 +91,25 @@ plot_pretty_clusters <- function(fcs_file_cluster){
   #plot as before
   plot.default(clust_df$tSNE_X_P_65_E_200_I_1500_T_0.3, 
                clust_df$tSNE_Y_P_65_E_200_I_1500_T_0.3, 
+=======
+  #plot as before
+  plot.default(clust_df$tSNE_X_P_30_E_200_I_1000_T_0.2, 
+               clust_df$tSNE_Y_P_30_E_200_I_1000_T_0.2, 
+>>>>>>> origin/master
                pch=19, 
                cex=0.3,
                col = clust_df$Col,
                xlab = 'tSNE 1',
                ylab = 'tSNE 2'
+<<<<<<< HEAD
                )
   dev.off()
   
   
   # return(clust_df)
+=======
+  )
+>>>>>>> origin/master
   
 }
 
@@ -77,6 +131,7 @@ test_num_clusters <- function(fcs_file){
   
 }
 
+<<<<<<< HEAD
 # Correctly annotate the tSNE dotplot with the lcuster annotations
 # In progress - non functional
 annotate.cluster.plot <- function(cluster_fcs_file, annotations, names){
@@ -84,6 +139,53 @@ annotate.cluster.plot <- function(cluster_fcs_file, annotations, names){
   # Take the heatmap clusters and split them adding annotation
   
   
+=======
+# Correctly annotate the heatmap with user defined annotations
+# Generate new heatmap
+# Currently does'nt work
+annotate.heatmap <- function(){
+  
+  # Take the heatmap clusters and split them adding annotations
+  
+  
+  
+  
+  if(is.list(annotations)){
+    
+    # generate vector for categorizing 
+    clust_df$categories <- 'Un'
+    for(l in 1:length(annotations)){
+      
+      positions <- which(clust_df$cluster %in% annotations[[l]])
+      clust_df$categories[positions] <- names[l]
+    }
+    
+    clust_df$categories <- as.factor(clust_df$categories)
+    
+    #create the new color pallet
+    num_colors <- nlevels(clust_df$categories)
+    coloring <- rainbow(num_colors)
+    
+    plot.default(clust_df$tSNE_X_P_30_E_200_I_1000_T_0.2, 
+                 clust_df$tSNE_Y_P_30_E_200_I_1000_T_0.2, 
+                 pch=19, 
+                 cex=0.3,
+                 col = coloring[clust_df$categories],
+                 xlab = 'tSNE 1',
+                 ylab = 'tSNE 2'
+    )
+    
+    legend(
+      x ="topleft",
+      legend = paste(levels(clust_df$categories)), # for readability of legend
+      col = coloring,
+      pch = 19, # same as pch=20, just smaller
+      cex = 0.7, # scale the legend to look attractively sized
+      bty = 'n'
+    )
+    
+  }
+>>>>>>> origin/master
 }
 
 read_csvToFcs <- function(dat) {
@@ -116,7 +218,11 @@ read_csvToFcs <- function(dat) {
   # a simple plot to check that it worked
   dev.new(width=1.75, height=5)
   
+<<<<<<< HEAD
   xyplot(Comp.PE.A~Comp.APC.A,ff)
+=======
+  xyplot(SSC.A~FSC.A,ff)
+>>>>>>> origin/master
   
   out <- strsplit(dat,'.csv')
   output_dir <- file.path(out)
@@ -126,7 +232,11 @@ read_csvToFcs <- function(dat) {
   write.FCS(ff,paste(output_dir,'FCS',sep='.'))
   
   
+<<<<<<< HEAD
    
+=======
+  
+>>>>>>> origin/master
   
 }
 
@@ -147,7 +257,10 @@ load_spade_libs <- function() {
   library(pheatmap)
   library(superheat)
   library(RCofillorBrewer)
+<<<<<<< HEAD
   library(RColorBrewer)
+=======
+>>>>>>> origin/master
   
 }
 
@@ -166,9 +279,14 @@ QC_fcs_file <- function(data_file_path) {
 # tSNE graphs should be heat cloloured by channel
 # With scale transform specified use asinh with t factor = 0.0095
 
+<<<<<<< HEAD
 color.bar <- function(lut, pdf_file , min, max=-min, nticks=10, ticks=seq(min, max, len=nticks), title='') {
   scale = (length(lut)-1)/(max-min)
   scale = round(scale, 3)  
+=======
+color.bar <- function(lut, pdf_file , min, max=-min, nticks=11, ticks=seq(min, max, len=nticks), title='') {
+  scale = (length(lut)-1)/(max-min)
+>>>>>>> origin/master
   
   pdf(pdf_file)
   # dev.new(width=1.75, height=5)
@@ -181,6 +299,7 @@ color.bar <- function(lut, pdf_file , min, max=-min, nticks=10, ticks=seq(min, m
 
   dev.off()
   
+<<<<<<< HEAD
 }
 
 # This is a function using min/max normalization
@@ -195,10 +314,16 @@ asinh_scale <- function(x, transform){
 }
 # Need to make the transform a vector and apply each transformation to each channel individually
 plot_tSNE <- function(csv_file_path, transform) {
+=======
+  }
+
+plot_tSNE <- function(csv_file_path, transform=0.02) {
+>>>>>>> origin/master
   
   # read the accense data in put and plot the flowJO tSNE points
   tSNE_data <- read.csv(csv_file_path, sep = ',')
   
+<<<<<<< HEAD
   # Do i need this line of code?
   transform_tSNE <- as.matrix(tSNE_data)
   
@@ -254,16 +379,48 @@ plot_tSNE <- function(csv_file_path, transform) {
     pdf(path, width = 10, height = 10)
     
     count <- count + 1
+=======
+  # Create the color ramp
+  # spectralPal <- colorRampPalette(brewer.pal(11,"Spectral"))(100)
+  rbPal <- colorRampPalette(c('blue', 'grey', 'red'))
+  heatPal <- colorRamps::matlab.like(20)
+  
+  
+  
+  # Create heat colour scale and add it as a vector column
+  for (k in 3:(ncol(tSNE_data)-2)) {
+  
+    tSNE <- as.matrix(tSNE_data[k])
+    
+    asinh_tSNE <- asinh(tSNE*transform)
+    
+    # Assign data to heat values
+    tSNE_cols <- as.numeric(cut(asinh_tSNE, breaks = c(round(min(asinh_tSNE), 2), seq( -0.1, round(quantile(asinh_tSNE, 0.9995), 2), len = 99))))    
+    plot_Cols <- rbPal(99)[tSNE_cols]
+  
+    # Create the output_file 
+    pdf_outfile <- paste(colnames(tSNE_data[k]), 'asinh', transform , '.pdf', sep = '_')
+    pdf(pdf_outfile, paper='a4', width = 50, height = 40)
+    
+>>>>>>> origin/master
     # split the pdf into two bits for legend
     # layout(matrix(1:2,ncol=2), width = c(2,1),height = c(1,1))
     
     
+<<<<<<< HEAD
     # Plot the tSNE
     # Need to change the tSNE parameter name to fi the run parameters
     plot.default(tSNE_data$tSNE_X_P_65_E_200_I_1500_T_0.3, 
                 tSNE_data$tSNE_Y_P_65_E_200_I_1500_T_0.3, 
                 pch=19, 
                 cex=0.5,
+=======
+    
+    plot.default(tSNE_data$tSNE_X_P_30_E_200_I_1000_T_0.2, 
+                tSNE_data$tSNE_Y_P_30_E_200_I_1000_T_0.2, 
+                pch=19, 
+                cex=0.45,
+>>>>>>> origin/master
                 col = plot_Cols,
                 xlab = 'tSNE 1',
                 ylab = 'tSNE 2'
@@ -272,10 +429,15 @@ plot_tSNE <- function(csv_file_path, transform) {
     dev.off()
     
     pdf_bar <- paste(colnames(tSNE_data[k]), 'Legend', '.pdf', sep = '_')
+<<<<<<< HEAD
     pdf_outpath <- paste(folder, pdf_bar, sep = '/')
     
     # Create the legend bar
     color.bar(colorRamps::matlab.like2(99), pdf_outpath, min = 0, max = 1)
+=======
+    
+    color.bar(rbPal(80), pdf_bar, min = -0.1, max = round(quantile(asinh_tSNE, 0.9995), 2))
+>>>>>>> origin/master
   
 }
 
@@ -287,7 +449,11 @@ plot_tSNE <- function(csv_file_path, transform) {
 # Clustering should be proportional to the cell number as you dont want loads of nodes with no cells in it 
 # Does SPADE have to be run with the same random seed everytime for conistency?
 
+<<<<<<< HEAD
 RUN_SPADE_tSNE <- function(data_file_path, clusters=100, n=3, transforms='none', markers = c('tSNE_X_P_65_E_200_I_1500_T_0.3', 'tSNE_Y_P_65_E_200_I_1500_T_0.3'))  {
+=======
+RUN_SPADE_tSNE <- function(data_file_path, clusters=100, n=3, transforms='none', markers = c('tSNE_X_P_30_E_200_I_1000_T_0.2', 'tSNE_Y_P_30_E_200_I_1000_T_0.2'))  {
+>>>>>>> origin/master
   
 
   # Name of output directory
@@ -320,10 +486,17 @@ RUN_SPADE_tSNE <- function(data_file_path, clusters=100, n=3, transforms='none',
 }
 
 
+<<<<<<< HEAD
 # Note that names always has to begin with 'Un' if not all subsets are specified
 # How does the filepath work?
 
 av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations = NULL, fcs_file_cluster = NULL, names = NULL, panel, cutree = 1 ) {
+=======
+# Include markers as vector to determine cluster markers
+# This is currently set up on MSC panel
+
+av_table_heatmap_SPADE <- function(data_file_path, n=3, transform = 0.02, annotations = NULL, clust_df = NULL, names = NULL, panel) {
+>>>>>>> origin/master
 
   # Function to average the three tables
   # Then write out the average table and heatmap it
@@ -335,9 +508,15 @@ av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations =
   count <- 1
   
   for(p in 1:n) {
+<<<<<<< HEAD
     print(p)
     output_dir_n <- paste(output_dir, p, sep = '_')  
     
+=======
+  
+    output_dir_n <- paste(output_dir, p, sep = '_')  
+
+>>>>>>> origin/master
     # Import the node median fluoresencs values and add them together
     table_file_path <- paste(data_file_path, '.density.fcs.cluster.fcs.anno.Rsave_table.csv', sep='')
     table_path <- file.path(output_dir_n,'tables', 'bySample', table_file_path)
@@ -399,10 +578,17 @@ av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations =
   # Prune the table values so just the ones we want
   # Use markers from input
   if(panel == 'MSC'){
+<<<<<<< HEAD
     cluster_panel <- c('ID', 'mediansComp.APC.A', 'mediansComp.PE.A', 'mediansComp.Pacific.Blue.A', 'mediansComp.FITC.A')
   }
   if(panel == 'TAM'){
     cluster_panel <- c('ID', 'mediansComp.APC.A', 'mediansComp.PE.A', 'mediansComp.Pacific.Blue.A', 'mediansComp.APC.Cy7.A', 'mediansComp.AmCyan.A')
+=======
+    cluster_panel <- c('ID', 'mediansComp.APC.A', 'mediansComp.PE.A', 'mediansComp.Pacific.Blue.A', 'mediansComp.APC.Cy7.A', 'mediansComp.FITC.A')
+  }
+  if(panel == 'TAM'){
+    cluster_panel <- c('ID', 'mediansComp.APC.A', 'mediansComp.PE.A', 'mediansComp.Pacific.Blue.A', 'mediansComp.APC.Cy7.A', 'mediansComp.FITC.A', 'mediansComp.AmCyan.A')
+>>>>>>> origin/master
     
   }
   prunedByChannel_SPADE_nodes <- av_SPADE_nodes[,cluster_panel]
@@ -415,6 +601,7 @@ av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations =
 
   # prune the table IDs into rownames
   # This is stupid as its dependant on the number of markers used
+<<<<<<< HEAD
   
   x <- length(cluster_panel)
   rownames(prunedByChannel_SPADE_nodes) <- prunedByChannel_SPADE_nodes[,1]
@@ -454,6 +641,25 @@ av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations =
     colnames(arcsinh_NODES) = c('CD206', 'MHCII', 'F4_80', 'CD11c', 'CD11b')
     # bl_orange_green_turq_cyan
     my_cols <- c('#377eb8')
+=======
+  x <- length(cluster_panel)
+  rownames(prunedByChannel_SPADE_nodes) <- prunedByChannel_SPADE_nodes[,1]
+  prunedByChannel_SPADE_nodes <- prunedByChannel_SPADE_nodes[,2:x]
+
+  # arcsinh width basis is fidly, 0.01 seems to work quite well
+  # So the transform function is dependant on the expression of the marker set
+  # This level 0.0095 appears to work alright for separating out the colours
+  arcsinh_NODES <- as.data.frame(asinh(prunedByChannel_SPADE_nodes*transform)) 
+  
+  
+  #Rename the columns - this should be done with a double vector of markers and stains
+  if(panel == "MSC"){
+    colnames(arcsinh_NODES) = c('CD140a', 'Ly6A', 'CD90', 'CD45', 'CD34')
+  }
+  
+  if(panel == 'TAM'){
+    colnames(arcsinh_NODES) = c('CD206', 'MHCII', 'F4_80', 'CD11c', 'CD45', 'CD11b')
+>>>>>>> origin/master
   }
   
   # Testing print statements
@@ -472,18 +678,27 @@ av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations =
   hot_pal <- heat_palette(80)
 
   # heat_palette break for ramp
+<<<<<<< HEAD
   # heat_pairs.breaks <- seq(-1, 7, by=0.1)
+=======
+  heat_pairs.breaks <- seq(-1, 7, by=0.1)
+>>>>>>> origin/master
   
   # Testing print statements
   print(max(arcsinh_NODES))
   print(min(arcsinh_NODES))
   
   # Red blue heatmap - replace this with the modified breaks to optimize heatmap (min = 0.1, max is 995 percentile or summat)
+<<<<<<< HEAD
   # Create a list of vectors in order to bin the values into for the breaks
   blue_breaks <- seq(min(prunedByChannel_SPADE_nodes), max(prunedByChannel_SPADE_nodes), by = (max(prunedByChannel_SPADE_nodes) - min(prunedByChannel_SPADE_nodes)) / 80) 
   
   # blue_breaks is throwing some error here
   # blue_breaks <- seq(0 , 8, by = (8 - min(prunedByChannel_SPADE_nodes)) / 60)
+=======
+  blue_breaks <- seq(min(prunedByChannel_SPADE_nodes), max(prunedByChannel_SPADE_nodes), by = (max(prunedByChannel_SPADE_nodes) - min(prunedByChannel_SPADE_nodes)) / 80) 
+  blue_breaks <- seq(0 , 8, by = (8 - min(prunedByChannel_SPADE_nodes)) / 80)
+>>>>>>> origin/master
   
   # For pheatmap, calculate the optimal fontsize to fit the row
   fontsize_row = 700 / nrow(arcsinh_NODES) 
@@ -495,9 +710,15 @@ av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations =
     # Genreate unique filename for clustering
     time <- Sys.time()
     time <- format(time, format =  '%H%M')
+<<<<<<< HEAD
     pdf_outfile <- paste(output_dir,'asinh', 'vector_transform', time, 'n', n, '.pdf', sep = '_')
 
     pdf(pdf_outfile, width = 12, height = 12)
+=======
+    pdf_outfile <- paste(output_dir,'asinh', transform, time, 'n', n, '.pdf', sep = '_')
+
+    pdf(pdf_outfile, paper='a4', width = 50, height = 40)
+>>>>>>> origin/master
 
 
     # pheatmap execution if no annotations
@@ -518,6 +739,7 @@ av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations =
     pheatmap(arcsinh_NODES, 
             color = bl_red, 
             scale = 'none', 
+<<<<<<< HEAD
             cellwidth = 15, 
             cellheight =  15,
             fontsize_row = fontsize_row,
@@ -525,6 +747,14 @@ av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations =
             cutree_rows = cutree)
             # annotation_row = final_annotations
             
+=======
+            cellwidth = 8, 
+            cellheight =  8,
+            fontsize_row = fontsize_row,
+            fontsize_col = fontsize_row+1,
+            cutree_rows = 10,
+            annotation_row = final_annotations)
+>>>>>>> origin/master
     
     dev.off()
     
@@ -534,6 +764,7 @@ av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations =
   # if is annotations then map them back onto the heatmap 
   if (is.list(annotations)) {
       
+<<<<<<< HEAD
     print('graphing with annotations')
     
     # Find the cluster file in the file
@@ -564,11 +795,29 @@ av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations =
         
           }
       }
+=======
+      # generate vector for categorizing 
+      num_cluster <- range(clust_df$cluster)[2]
+      
+      column_annotations <- seq(1, 80, by=1)
+
+        
+        for(k in 1:length(annotations)){
+          
+          
+          # col_annotations[annotations[[k]]] <- k
+          positions <- which(column_annotations %in% annotations[[k]])
+          col_annotations[positions] <- k
+        
+          }
+        
+>>>>>>> origin/master
       
       final_annotations <- as.data.frame(factor(col_annotations, labels = names))
       
       rownames(final_annotations) <- rownames(arcsinh_NODES)
       
+<<<<<<< HEAD
       colnames(final_annotations) <- c('Cell subset')
       
       ann_colours <- list('red', 'blue', 'green', 'yellow')
@@ -642,6 +891,19 @@ av_table_heatmap_SPADE <- function(data_file_path, n=1, transform, annotations =
       dev.off()
     
   }
+=======
+      pheatmap(arcsinh_NODES, 
+             color = bl_red, 
+             scale = 'none', 
+             cellwidth = 6, 
+             cellheight =  3.5, 
+             fontsize_row = fontsize_row,
+             row_annotations = col_annotations)
+    
+    
+  }
+
+>>>>>>> origin/master
   
   
   
